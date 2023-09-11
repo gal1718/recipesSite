@@ -20,11 +20,11 @@ const MenuProps = {
 };
 
 const names = [
-  "Lunch",
-  "Dinner",
+  "Lunch/Dinner",
   "Supper",
   "Breakfast",
-  "Brunch"
+  "Brunch",
+  "Snack"
 ];
 
 function getStyles(name, selectedMeals, theme) {
@@ -36,7 +36,7 @@ function getStyles(name, selectedMeals, theme) {
   };
 }
 
-const MealTypeSelect = () => {
+const MealTypeSelect = ({setMealTypeFilters}) => {
   const theme = useTheme();
   const [selectedMeals, setSelectedMeals] = React.useState([]);
 
@@ -48,6 +48,7 @@ const MealTypeSelect = () => {
       // On autofill we get a stringified value.
       typeof value === "string" ? value.split(",") : value
     );
+    setMealTypeFilters(typeof value === "string" ? value.split(",") : value);
   };
 
   return (

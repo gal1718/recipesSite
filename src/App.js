@@ -30,14 +30,46 @@ function App() {
   const [mealTypeFilters, setMealTypeFilters] = useState([]);
   const [dishTypeFilters, setDishTypeFilters] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
-
-
+  const [likedRecipes, setLikedRecipes] = useState(JSON.parse(localStorage.getItem("likedRecipesStorage")) || []);
+  const [likedRecipesFilterOn,setLikedRecipesFilterOn] = useState(false);
 
   useEffect(() => {
+    // Fetch recipes data
+
+    const getRecipes = async () => {
+      if (recipes.length == 0) {
+        const response = await fetch(
+          "https://api.edamam.com/api/recipes/v2?type=public&&calories=500-1000&app_id=ec287221&app_key=9fedf51101deeaf2225eb4ce999499fd&count=20"
+        );
+
+       const { hits: recipesData } = await response.json();
+        const likedRecFromStorageLabels = (JSON.parse(localStorage.getItem("likedRecipesStorage"))).map((item) => item.label)
+        console.log("likedRecFromStorage ", likedRecFromStorageLabels)
+        console.log("recipesData ", JSON.stringify(recipesData))
+        const newRecipesData = recipesData.map((item,index) => {
+          if(likedRecFromStorageLabels.includes(item.recipe.label)){
+            console.log("includes");
+            
+            return {key:index, ...item.recipe,liked: true}
+          }
+            
+            else{
+              console.log("not includes")
+              console.log("item.label" ,item.label);
+              return {key:index, ...item.recipe,liked: false}
+            } 
+        }) 
+        console.log("newRecipesData data: " + newRecipesData);
+        console.log("newRecipesData length: " + newRecipesData.length);
+        console.log("recipes : " + JSON.stringify(newRecipesData));
+        setRecipes(newRecipesData);
+        setFilteredRecipes(newRecipesData)
+      }
+    };
+
     getRecipes();
   }, []);
 
-  
   useEffect(() => {
     // Create a copy of the recipes and apply all filters together
     let filtered = [...recipes];
@@ -50,8 +82,7 @@ function App() {
 
     if (calFilter.length !== 0) {
       filtered = filtered.filter(
-        (rec) =>
-          rec.calories >= calFilter[0] && rec.calories <= calFilter[1]
+        (rec) => rec.calories >= calFilter[0] && rec.calories <= calFilter[1]
       );
     }
 
@@ -64,51 +95,58 @@ function App() {
         trueHealthKeys.every((key) => rec.healthLabels.includes(key))
       );
     }
+    console.log("insidefilters");
+    if (mealTypeFilters.length > 0) {
+      console.log("mealTypeFilters: " + mealTypeFilters);
+      filtered = filtered.filter((rec) =>
+        mealTypeFilters.some((key) => rec.mealType.includes(key.toLowerCase()))
+      );
+    }
 
-    // Set the filtered recipes
+    if (dishTypeFilters.length > 0) {
+      console.log("mealTypeFilters: " + dishTypeFilters);
+      filtered = filtered.filter((rec) =>
+        dishTypeFilters.some((key) => rec.dishType.includes(key.toLowerCase()))
+      );
+    }
+    if (likedRecipesFilterOn) {
+      console.log("likedRecipesFilterOn: " + likedRecipesFilterOn);
+      filtered = filtered.filter((rec) =>rec.liked == true);
+    }
+
     setFilteredRecipes(filtered);
-  }, [titleFilter, calFilter, healthFilters, recipes]);
+  }, [titleFilter, calFilter, healthFilters, mealTypeFilters, dishTypeFilters,likedRecipesFilterOn,likedRecipes]);
 
-  const getRecipes = async () => {
-    const api = await fetch("https://api.edamam.com/api/recipes/v2?type=public&q=salad&app_id=ec287221&app_key=9fedf51101deeaf2225eb4ce999499fd&count=20");
-    const {hits} = await api.json();
-    console.log("recipes length: " + hits.length);
-    console.log("recipes : " + JSON.stringify(hits));
-    setRecipes(hits.map((item) => item.recipe));
-    setFilteredRecipes(hits.map((item) => item.recipe));
-    // setRecipes(
-    //   recipesData.recipesArr.map((item) => ({
-    //     label: item.recipe.label,
-    //     image: saladImg,
-    //     ingredients: item.recipe.ingredients,
-    //     mealType: item.recipe.mealType,
-    //     dishType: item.recipe.dishType,
-    //     calories: item.recipe.calories,
-    //     healthLabels: item.recipe.healthLabels,
-    //   }))   
-    // );
-    // setFilteredRecipes(
-    //   recipesData.recipesArr.map((item) => ({
-    //     label: item.recipe.label,
-    //     image: saladImg,
-    //     ingredients: item.recipe.ingredients,
-    //     mealType: item.recipe.mealType,
-    //     dishType: item.recipe.dishType,
-    //     calories: item.recipe.calories,
-    //     healthLabels: item.recipe.healthLabels,
-    //   }))   
-    // );
-    console.log("recipes : " + JSON.stringify(recipes));
-    // console.log("data " + JSON.stringify(data));
-    //console.log("recipes " + JSON.stringify(recipesData));
-    //  setRecipes(recipesData.recipesArr.map((item) => ({
-    //   label: item.recipe.label,
-    //   image: item.recipe.image,
-    //   ingredients: item.recipe.ingredients,
-    //   mealType: item.recipe.mealType,
-    //   dishType: item.recipe.dishType,
-    //   calories: item.recipe.calories
-    // })));
+  const addLikedRecipe = (key) => {
+    console.log("called");
+    const recipesCopy = recipes.map((item) => {
+      if (item.key == key) return { ...item, liked: true };
+      else return item;
+    });
+    console.log(recipesCopy);
+    setRecipes(recipesCopy);
+
+    const filteredRecipesCopy = recipes.map((item) => {
+      if (item.key == key) return { ...item, liked: true };
+      else return item;
+    });
+    setFilteredRecipes(filteredRecipesCopy);
+  };
+
+  const removeLikedRecipe = (key) => {
+    console.log("called22q");
+    const recipesCopy = recipes.map((item) => {
+      if (item.key == key) return { ...item, liked: false };
+      else return item;
+    });
+    console.log(recipesCopy);
+    setRecipes(recipesCopy);
+
+    const filteredRecipesCopy = recipes.map((item) => {
+      if (item.key == key) return { ...item, liked: false };
+      else return item;
+    });
+    setFilteredRecipes(filteredRecipesCopy);
   };
 
   return (
@@ -124,6 +162,11 @@ function App() {
                 titleFilter,
                 healthFilters,
                 setHealthFilters,
+                mealTypeFilters,
+                setMealTypeFilters,
+                setDishTypeFilters,
+                setLikedRecipesFilterOn,
+                likedRecipesFilterOn
               }}
             />
             <div
@@ -136,21 +179,30 @@ function App() {
                 marginTop: "5%",
               }}
             >
-              {filteresRecipes.map((recipe, index) => {
-                  return (
-                    <RecipeReviewCard
-                      key={index}
-                      recipe={recipe}
-                      setRecipeSelected={setRecipeSelected}
-                      setSelectedRecipe={setSelectedRecipe}
-                    />
-                  );
-                })}
+              {filteresRecipes.map((recipe) => {
+                return (
+                  <RecipeReviewCard
+                    key={recipe.key}
+                    recipe={recipe}
+                    setRecipeSelected={setRecipeSelected}
+                    setSelectedRecipe={setSelectedRecipe}
+                    setLikedRecipes={setLikedRecipes}
+                    likedRecipes={likedRecipes}
+                    addLikedRecipe={addLikedRecipe}
+                    removeLikedRecipe={removeLikedRecipe}
+                  />
+                );
+              })}
             </div>
           </div>
         </div>
       )}
-      {recipeSelected && <RecipeDetails setRecipeSelected={setRecipeSelected} selectedRecipe={selectedRecipe} />}
+      {recipeSelected && (
+        <RecipeDetails
+          setRecipeSelected={setRecipeSelected}
+          selectedRecipe={selectedRecipe}
+        />
+      )}
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import TextField from "@mui/material/TextField";
 import { Container } from "@mui/material";
 import { Button, styled, Select } from "@mui/material";
+import Typography from "@mui/material/Typography";
 
 
 const ColumnContainer = styled("div")({
@@ -19,6 +20,7 @@ const RowContainer = styled("div")({
     TextField,
     ColumnContainer,
     RowContainer,
-    Button
+    Button,
+    Typography
   };
   

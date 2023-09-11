@@ -8,10 +8,11 @@ import MenuIcon from "@mui/icons-material/Menu";
 import { RowContainer, Button } from "../../Common/Common.style";
 import DishTypeSelect from "../DishTypeSelect/DishTypeSelect";
 import MealTypeSelect from "../MealTypeSelect/MealTypeSelect";
+import React from 'react';
 
 
 
-const SideBar = ({ setTitleFilter, setCalFilter, titleFilter, healthFilters, setHealthFilters }) => {
+const SideBar = ({ setTitleFilter, setCalFilter, titleFilter, healthFilters, setHealthFilters, mealTypeFilters, setMealTypeFilters, setDishTypeFilters, setLikedRecipesFilterOn, likedRecipesFilterOn}) => {
   const [calories, setCalories] = useState([500, 3000]);
 
 
@@ -82,8 +83,10 @@ const SideBar = ({ setTitleFilter, setCalFilter, titleFilter, healthFilters, set
           <Button style={{ backgroundColor: healthFilters["Mollusk-Free"] ? 'lightskyblue' : undefined }} onClick={() => setHealthFilters({...healthFilters, "Mollusk-Free": !healthFilters["Mollusk-Free"]})} sx={{ alignSelf: "flex-start" }}>Mollusk-Free</Button>
           <Button style={{ backgroundColor: healthFilters["Alcohol-Free"] ? 'lightskyblue' : undefined }} onClick={() => setHealthFilters({...healthFilters, "Alcohol-Free": !healthFilters["Alcohol-Free"]})}>Alcohol-Free</Button>
         </RowContainer>
-        <DishTypeSelect/>
-        <MealTypeSelect/>
+        <DishTypeSelect setDishTypeFilters={setDishTypeFilters}/>
+        <MealTypeSelect mealTypeFilters={mealTypeFilters} setMealTypeFilters={setMealTypeFilters}/>
+        <Button style={{ backgroundColor: likedRecipesFilterOn ? 'lightskyblue' : undefined, marginTop: "10%" }} onClick={() => setLikedRecipesFilterOn(!likedRecipesFilterOn)}>Liked Recipes</Button>
+        
       </Box>
     </div>
   );
