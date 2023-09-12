@@ -33,12 +33,13 @@ const RecipeReviewCard = ({
       setLikedRecipes([...likedRecipes, recipe]); //add to local storage var then with useaffect
       addLikedRecipe(recipe.key);
     } else {
+      console.log("handleLikedRecipe else")
+      removeLikedRecipe(recipe.key);
       event.target.style.color = "initial";
       const newLikedRecipes = likedRecipes.filter(
         (item) => item.key != recipe.key
       );
-      setLikedRecipes(newLikedRecipes);
-      removeLikedRecipe(recipe.key);
+      setLikedRecipes(newLikedRecipes);   
     }
   };
 

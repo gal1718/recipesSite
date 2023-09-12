@@ -14,10 +14,10 @@ function App() {
   const [recipeSelected, setRecipeSelected] = useState(false);
   const [titleFilter, setTitleFilter] = useState("");
   const [calFilter, setCalFilter] = useState([]);
-  const [filteresRecipes, setFilteredRecipes] = useState([]);
+  const [filteredRecipes, setFilteredRecipes] = useState([]);
   const [healthFilters, setHealthFilters] = useState({
     "Gluten-Free": false,
-    "Vegan": false,
+    Vegan: false,
     "Dairy-Free": false,
     "Egg-Free": false,
     "Wheat-Free": false,
@@ -30,40 +30,34 @@ function App() {
   const [mealTypeFilters, setMealTypeFilters] = useState([]);
   const [dishTypeFilters, setDishTypeFilters] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
-  const [likedRecipes, setLikedRecipes] = useState(JSON.parse(localStorage.getItem("likedRecipesStorage")) || []);
-  const [likedRecipesFilterOn,setLikedRecipesFilterOn] = useState(false);
+  const [likedRecipes, setLikedRecipes] = useState(
+    JSON.parse(localStorage.getItem("likedRecipesStorage")) || []
+  );
+  const [likedRecipesFilterOn, setLikedRecipesFilterOn] = useState(false);
 
   useEffect(() => {
     // Fetch recipes data
 
     const getRecipes = async () => {
       if (recipes.length == 0) {
+        console.log("fetching data from API")
         const response = await fetch(
           "https://api.edamam.com/api/recipes/v2?type=public&&calories=500-1000&app_id=ec287221&app_key=9fedf51101deeaf2225eb4ce999499fd&count=20"
         );
 
-       const { hits: recipesData } = await response.json();
-        const likedRecFromStorageLabels = (JSON.parse(localStorage.getItem("likedRecipesStorage"))).map((item) => item.label)
-        console.log("likedRecFromStorage ", likedRecFromStorageLabels)
-        console.log("recipesData ", JSON.stringify(recipesData))
-        const newRecipesData = recipesData.map((item,index) => {
-          if(likedRecFromStorageLabels.includes(item.recipe.label)){
-            console.log("includes");
-            
-            return {key:index, ...item.recipe,liked: true}
+        const { hits: recipesData } = await response.json();
+        const likedRecFromStorageLabels = JSON.parse(
+          localStorage.getItem("likedRecipesStorage")
+        ).map((item) => item.label);
+        const newRecipesData = recipesData.map((item, index) => {
+          if (likedRecFromStorageLabels.includes(item.recipe.label)) {
+            return { key: index, ...item.recipe, liked: true };
+          } else {
+            return { key: index, ...item.recipe, liked: false };
           }
-            
-            else{
-              console.log("not includes")
-              console.log("item.label" ,item.label);
-              return {key:index, ...item.recipe,liked: false}
-            } 
-        }) 
-        console.log("newRecipesData data: " + newRecipesData);
-        console.log("newRecipesData length: " + newRecipesData.length);
-        console.log("recipes : " + JSON.stringify(newRecipesData));
+        });
         setRecipes(newRecipesData);
-        setFilteredRecipes(newRecipesData)
+        setFilteredRecipes(newRecipesData);
       }
     };
 
@@ -72,7 +66,13 @@ function App() {
 
   useEffect(() => {
     // Create a copy of the recipes and apply all filters together
+    console.log("insidefilters useEffect");
     let filtered = [...recipes];
+
+    if (likedRecipesFilterOn) {
+      console.log("likedRecipesFilterOn: " + likedRecipesFilterOn);
+      filtered = filtered.filter((rec) => rec.liked == true);
+    }
 
     if (titleFilter !== "") {
       filtered = filtered.filter((rec) =>
@@ -95,7 +95,6 @@ function App() {
         trueHealthKeys.every((key) => rec.healthLabels.includes(key))
       );
     }
-    console.log("insidefilters");
     if (mealTypeFilters.length > 0) {
       console.log("mealTypeFilters: " + mealTypeFilters);
       filtered = filtered.filter((rec) =>
@@ -109,44 +108,47 @@ function App() {
         dishTypeFilters.some((key) => rec.dishType.includes(key.toLowerCase()))
       );
     }
-    if (likedRecipesFilterOn) {
-      console.log("likedRecipesFilterOn: " + likedRecipesFilterOn);
-      filtered = filtered.filter((rec) =>rec.liked == true);
-    }
 
     setFilteredRecipes(filtered);
-  }, [titleFilter, calFilter, healthFilters, mealTypeFilters, dishTypeFilters,likedRecipesFilterOn,likedRecipes]);
+  }, [
+    titleFilter,
+    calFilter,
+    healthFilters,
+    mealTypeFilters,
+    dishTypeFilters,
+    likedRecipesFilterOn,
+    likedRecipes,
+  ]);
 
   const addLikedRecipe = (key) => {
-    console.log("called");
-    const recipesCopy = recipes.map((item) => {
-      if (item.key == key) return { ...item, liked: true };
-      else return item;
-    });
-    console.log(recipesCopy);
-    setRecipes(recipesCopy);
-
-    const filteredRecipesCopy = recipes.map((item) => {
+    console.log("addLikedRecipe start")
+    const filteredRecipesCopy = filteredRecipes.map((item) => {
       if (item.key == key) return { ...item, liked: true };
       else return item;
     });
     setFilteredRecipes(filteredRecipesCopy);
+
+    const recipesCopy = recipes.map((item) => {
+      if (item.key == key) return { ...item, liked: true };
+      else return item;
+    });
+    setRecipes(recipesCopy);
   };
 
   const removeLikedRecipe = (key) => {
-    console.log("called22q");
+    console.log("removeLikedRecipe start");
+    const filteredRecipesCopy = filteredRecipes.map((item) => {
+      if (item.key == key) return { ...item, liked: false };
+      else return item;
+    });
+    setFilteredRecipes(filteredRecipesCopy);
+
     const recipesCopy = recipes.map((item) => {
       if (item.key == key) return { ...item, liked: false };
       else return item;
     });
     console.log(recipesCopy);
     setRecipes(recipesCopy);
-
-    const filteredRecipesCopy = recipes.map((item) => {
-      if (item.key == key) return { ...item, liked: false };
-      else return item;
-    });
-    setFilteredRecipes(filteredRecipesCopy);
   };
 
   return (
@@ -166,7 +168,7 @@ function App() {
                 setMealTypeFilters,
                 setDishTypeFilters,
                 setLikedRecipesFilterOn,
-                likedRecipesFilterOn
+                likedRecipesFilterOn,
               }}
             />
             <div
@@ -179,7 +181,7 @@ function App() {
                 marginTop: "5%",
               }}
             >
-              {filteresRecipes.map((recipe) => {
+              {filteredRecipes.map((recipe) => {
                 return (
                   <RecipeReviewCard
                     key={recipe.key}
