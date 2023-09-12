@@ -19,24 +19,18 @@ const MenuProps = {
   },
 };
 
-const names = [
-  "Lunch/Dinner",
-  "Supper",
-  "Breakfast",
-  "Brunch",
-  "Snack"
-];
+const names = ["Lunch/Dinner", "Supper", "Breakfast", "Brunch", "Snack"];
 
 function getStyles(name, selectedMeals, theme) {
   return {
     fontWeight:
-    selectedMeals.indexOf(name) === -1
+      selectedMeals.indexOf(name) === -1
         ? theme.typography.fontWeightRegular
         : theme.typography.fontWeightMedium,
   };
 }
 
-const MealTypeSelect = ({setMealTypeFilters}) => {
+const MealTypeSelect = ({ setMealTypeFilters }) => {
   const theme = useTheme();
   const [selectedMeals, setSelectedMeals] = React.useState([]);
 

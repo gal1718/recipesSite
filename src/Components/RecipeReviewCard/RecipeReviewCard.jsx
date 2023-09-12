@@ -6,7 +6,7 @@ import CardContent from "@mui/material/CardContent";
 import CardActions from "@mui/material/CardActions";
 import Avatar from "@mui/material/Avatar";
 import IconButton from "@mui/material/IconButton";
-import {Typography} from "../../Common/Common.style";
+import { Typography } from "../../Common/Common.style";
 import { red } from "@mui/material/colors";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import ShareIcon from "@mui/icons-material/Share";
@@ -33,13 +33,12 @@ const RecipeReviewCard = ({
       setLikedRecipes([...likedRecipes, recipe]); //add to local storage var then with useaffect
       addLikedRecipe(recipe.key);
     } else {
-      console.log("handleLikedRecipe else")
       removeLikedRecipe(recipe.key);
       event.target.style.color = "initial";
       const newLikedRecipes = likedRecipes.filter(
         (item) => item.key != recipe.key
       );
-      setLikedRecipes(newLikedRecipes);   
+      setLikedRecipes(newLikedRecipes);
     }
   };
 

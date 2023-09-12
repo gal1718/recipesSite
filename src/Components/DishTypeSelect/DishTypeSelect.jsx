@@ -30,19 +30,19 @@ const names = [
   "Soup",
   "Main course",
   "Condiments and Sauces",
-  "Desserts"
+  "Desserts",
 ];
 
 function getStyles(name, selectedDishes, theme) {
   return {
     fontWeight:
-    selectedDishes.indexOf(name) === -1
+      selectedDishes.indexOf(name) === -1
         ? theme.typography.fontWeightRegular
         : theme.typography.fontWeightMedium,
   };
 }
 
-const DishTypeSelect = ({setDishTypeFilters}) => {
+const DishTypeSelect = ({ setDishTypeFilters }) => {
   const theme = useTheme();
   const [selectedDishes, setSelectedDishes] = React.useState([]);
 
@@ -54,7 +54,7 @@ const DishTypeSelect = ({setDishTypeFilters}) => {
       // On autofill we get a stringified value.
       typeof value === "string" ? value.split(",") : value
     );
-    setDishTypeFilters(typeof value === "string" ? value.split(",") : value)
+    setDishTypeFilters(typeof value === "string" ? value.split(",") : value);
   };
 
   return (

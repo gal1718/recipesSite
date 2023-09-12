@@ -3,24 +3,16 @@ import { Container } from "@mui/material";
 import { Button, styled, Select } from "@mui/material";
 import Typography from "@mui/material/Typography";
 
-
 const ColumnContainer = styled("div")({
-    display: "flex",
-    alignItems: "center",
-    flexDirection: "column",
-  });
+  display: "flex",
+  alignItems: "center",
+  flexDirection: "column",
+});
 
 const RowContainer = styled("div")({
-    display: "flex",
-    alignItems: "center",
-    flexDirection: "row",
-  });
+  display: "flex",
+  alignItems: "center",
+  flexDirection: "row",
+});
 
-  export {
-    TextField,
-    ColumnContainer,
-    RowContainer,
-    Button,
-    Typography
-  };
-  
+export { TextField, ColumnContainer, RowContainer, Button, Typography };

@@ -29,7 +29,6 @@ function App() {
   });
   const [mealTypeFilters, setMealTypeFilters] = useState([]);
   const [dishTypeFilters, setDishTypeFilters] = useState([]);
-  const [isOpen, setIsOpen] = useState(false);
   const [likedRecipes, setLikedRecipes] = useState(
     JSON.parse(localStorage.getItem("likedRecipesStorage")) || []
   );
@@ -40,7 +39,7 @@ function App() {
 
     const getRecipes = async () => {
       if (recipes.length == 0) {
-        console.log("fetching data from API")
+        console.log("fetching data from API");
         const response = await fetch(
           "https://api.edamam.com/api/recipes/v2?type=public&&calories=500-1000&app_id=ec287221&app_key=9fedf51101deeaf2225eb4ce999499fd&count=20"
         );
@@ -65,12 +64,9 @@ function App() {
   }, []);
 
   useEffect(() => {
-    // Create a copy of the recipes and apply all filters together
-    console.log("insidefilters useEffect");
     let filtered = [...recipes];
 
     if (likedRecipesFilterOn) {
-      console.log("likedRecipesFilterOn: " + likedRecipesFilterOn);
       filtered = filtered.filter((rec) => rec.liked == true);
     }
 
@@ -96,14 +92,12 @@ function App() {
       );
     }
     if (mealTypeFilters.length > 0) {
-      console.log("mealTypeFilters: " + mealTypeFilters);
       filtered = filtered.filter((rec) =>
         mealTypeFilters.some((key) => rec.mealType.includes(key.toLowerCase()))
       );
     }
 
     if (dishTypeFilters.length > 0) {
-      console.log("mealTypeFilters: " + dishTypeFilters);
       filtered = filtered.filter((rec) =>
         dishTypeFilters.some((key) => rec.dishType.includes(key.toLowerCase()))
       );
@@ -121,7 +115,6 @@ function App() {
   ]);
 
   const addLikedRecipe = (key) => {
-    console.log("addLikedRecipe start")
     const filteredRecipesCopy = filteredRecipes.map((item) => {
       if (item.key == key) return { ...item, liked: true };
       else return item;
@@ -136,7 +129,6 @@ function App() {
   };
 
   const removeLikedRecipe = (key) => {
-    console.log("removeLikedRecipe start");
     const filteredRecipesCopy = filteredRecipes.map((item) => {
       if (item.key == key) return { ...item, liked: false };
       else return item;
@@ -147,7 +139,7 @@ function App() {
       if (item.key == key) return { ...item, liked: false };
       else return item;
     });
-    console.log(recipesCopy);
+
     setRecipes(recipesCopy);
   };
 

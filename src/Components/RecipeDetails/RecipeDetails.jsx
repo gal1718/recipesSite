@@ -1,9 +1,8 @@
 import React from "react";
-import {Typography} from "../../Common/Common.style";
+import { Typography } from "../../Common/Common.style";
+import { Container } from "@mui/material";
 
 const RecipeDetails = ({ setRecipeSelected, selectedRecipe }) => {
-  console.log(JSON.stringify(selectedRecipe));
-
   return (
     <div className="RecipeDetails">
       <span
@@ -12,11 +11,18 @@ const RecipeDetails = ({ setRecipeSelected, selectedRecipe }) => {
       >
         Go Back
       </span>
-     
-      <h2>{selectedRecipe.label}</h2>
-      <img src={selectedRecipe.image}></img>
-      <Typography style={{marginTop: "5%"}}>{selectedRecipe.ingredientLines.toString().split(",").map((line, i) => <div key={i}>{line}</div>)}</Typography>
-      
+      <Container>
+        <h2>{selectedRecipe.label}</h2>
+        <img src={selectedRecipe.image}></img>
+        <Typography style={{ marginTop: "5%" }}>
+          {selectedRecipe.ingredientLines
+            .toString()
+            .split(",")
+            .map((line, i) => (
+              <div key={i}>{line}</div>
+            ))}
+        </Typography>
+      </Container>
     </div>
   );
 };
