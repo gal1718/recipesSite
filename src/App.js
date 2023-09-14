@@ -43,18 +43,25 @@ function App() {
         const response = await fetch(
           "https://api.edamam.com/api/recipes/v2?type=public&&calories=500-1000&app_id=ec287221&app_key=9fedf51101deeaf2225eb4ce999499fd&count=20"
         );
-
         const { hits: recipesData } = await response.json();
-        const likedRecFromStorageLabels = JSON.parse(
-          localStorage.getItem("likedRecipesStorage")
-        ).map((item) => item.label);
-        const newRecipesData = recipesData.map((item, index) => {
-          if (likedRecFromStorageLabels.includes(item.recipe.label)) {
-            return { key: index, ...item.recipe, liked: true };
-          } else {
+        let newRecipesData = [];
+        if (localStorage.getItem("likedRecipesStorage")) {
+          const likedRecFromStorageLabels = JSON.parse(
+            localStorage.getItem("likedRecipesStorage")
+          ).map((item) => item.label);
+          newRecipesData = recipesData.map((item, index) => {
+            if (likedRecFromStorageLabels.includes(item.recipe.label)) {
+              return { key: index, ...item.recipe, liked: true };
+            } else {
+              return { key: index, ...item.recipe, liked: false };
+            }
+          });
+        } else {
+          newRecipesData = recipesData.map((item, index) => {
             return { key: index, ...item.recipe, liked: false };
-          }
-        });
+          });
+        }
+
         setRecipes(newRecipesData);
         setFilteredRecipes(newRecipesData);
       }
